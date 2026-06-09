@@ -51,7 +51,8 @@ body {
     height: 120px;
     width: 120px;
     border-radius: 50%;
-    border: 1px solid #3a3a3a;
+    border: 3px solid #FFBF00;
+    box-shadow: 0 0 15px rgba(255,191,0,0.3);
 
 }
 
@@ -164,6 +165,7 @@ color: #FFBF00;
     height:5px;
     background-color: #FFBF00;
     margin-bottom: 20px;
+    border-radius: 10px;
     
 }
 .content{
@@ -188,6 +190,7 @@ color: #FFBF00;
     background-color: #1e1e1e;
     text-align: center;
 margin-top: 20px ;
+ min-height: 170px;
 transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .item img{
@@ -204,10 +207,15 @@ font-size:1rem ;
 font-weight: 500;
 }
 .item:hover{
-    transform: scale(1.1);
-    box-shadow:0px 0px 10px 5px rgba(0,0,0, 0.3) ;
+    transform: translateY(-8px);
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
 }
-
+.item p{
+    color: #FFBF00;
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 500;
+}
 /* education */
 
 #education{
@@ -291,8 +299,8 @@ transition:transform 0.5s ease , box-shadow 0.5s ease;
 
 }
 .project:hover{
-    transform: translate(-10px);
-    box-shadow: 0px 0px 10px 5px rgba(0,0,0, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
 }
 
 .project img{
