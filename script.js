@@ -1,102 +1,138 @@
-// Smooth scroll navigation
-document.querySelectorAll("nav a").forEach(link => {
-  link.addEventListener("click", function(e) {
+document.addEventListener('DOMContentLoaded', () => {
+  // Mobile Navigation Toggle
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navLinks = document.getElementById('navLinks');
 
-    e.preventDefault();
-
-    const targetId = this.getAttribute("href");
-    const targetSection = document.querySelector(targetId);
-
-    targetSection.scrollIntoView({
-      behavior: "smooth"
+  if (mobileToggle && navLinks) {
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      const icon = mobileToggle.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-xmark');
+      }
     });
 
-  });
-});
+    // Close menu when clicking link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        const icon = mobileToggle.querySelector('i');
+        if (icon) {
+          icon.classList.add('fa-bars');
+          icon.classList.remove('fa-xmark');
+        }
+      });
+    });
+  }
 
+  // Header Scroll Effect & Active Link Highlight
+  const header = document.querySelector('header');
+  const sections = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-links a');
 
-// Active navigation link on scroll
-
-const sections = document.querySelectorAll("section, div[id]");
-const navLinks = document.querySelectorAll("nav a");
-
-window.addEventListener("scroll", () => {
-
-  let current = "";
-
-  sections.forEach(section => {
-
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.clientHeight;
-
-    if (pageYOffset >= sectionTop - 200) {
-      current = section.getAttribute("id");
+  window.addEventListener('scroll', () => {
+    // Header shadow on scroll
+    if (window.scrollY > 50) {
+      header.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
+    } else {
+      header.style.boxShadow = 'none';
     }
 
+    // ScrollSpy active link update
+    let scrollY = window.pageYOffset;
+    sections.forEach(current => {
+      const sectionHeight = current.offsetHeight;
+      const sectionTop = current.offsetTop - 120;
+      const sectionId = current.getAttribute('id');
+
+      if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+        navItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === `#${sectionId}`) {
+            item.classList.add('active');
+          }
+        });
+      }
+    });
   });
 
-  navLinks.forEach(link => {
 
-    link.classList.remove("active");
 
-    if (link.getAttribute("href") === "#" + current) {
-      link.classList.add("active");
+  // Skills Tab Filtering
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const skillCards = document.querySelectorAll('.skill-card');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.getAttribute('data-filter');
+
+      skillCards.forEach(card => {
+        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+          card.style.display = 'flex';
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          }, 50);
+        } else {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.8)';
+          setTimeout(() => {
+            card.style.display = 'none';
+          }, 300);
+        }
+      });
+    });
+  });
+
+  // Copy to Clipboard Utility with Toast
+  window.copyToClipboard = function(text, label) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`${label} copied to clipboard! 📋`);
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
+  };
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (toast) {
+      toast.querySelector('.toast-msg').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
     }
+  }
 
+  // Contact Form Submission Handler
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      showToast('Thank you! Your message has been sent successfully. 🚀');
+      contactForm.reset();
+    });
+  }
+
+  // Intersection Observer for Scroll Fade-In Animations
+  const observerOptions = {
+    threshold: 0.15
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in-up');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.glass-card, .section-title, .timeline-item').forEach(el => {
+    observer.observe(el);
   });
-
-});
-
-
-// Skills animation on scroll
-
-const skills = document.querySelectorAll(".item");
-
-const observer = new IntersectionObserver(entries => {
-
-  entries.forEach(entry => {
-
-    if (entry.isIntersecting) {
-
-      entry.target.style.transform = "scale(1.1)";
-      entry.target.style.transition = "0.5s";
-
-    }
-
-  });
-
-});
-
-skills.forEach(skill => observer.observe(skill));
-
-
-// Project card hover tilt effect
-
-const projects = document.querySelectorAll(".project");
-
-projects.forEach(project => {
-
-  project.addEventListener("mousemove", e => {
-
-    const rect = project.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = -(y - centerY) / 20;
-    const rotateY = (x - centerX) / 20;
-
-    project.style.transform =
-      `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-  });
-
-  project.addEventListener("mouseleave", () => {
-
-    project.style.transform = "rotateX(0) rotateY(0)";
-
-  });
-
 });
